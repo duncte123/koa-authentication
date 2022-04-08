@@ -1,0 +1,7 @@
+{
+  "i18n-ally.localesPaths": ["apps/client/locales"],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "editor.formatOnSave": false
+}
