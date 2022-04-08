@@ -1,6 +1,7 @@
 import { type Context, type Next } from 'koa'
 import { BadRequest } from 'http-errors'
 import { AuthenticationError } from './errors'
+import { sign } from './jwt'
 
 export function createLocalStrategy(
   verify: (username: string, password: string) => Promise<void> | void,
@@ -18,6 +19,14 @@ export function createLocalStrategy(
       throw new AuthenticationError()
     }
     ctx.state.user = { username }
+    await next()
+  }
+}
+
+export function createCookie(secret: () => string) {
+  return async(ctx: Context, next: Next) => {
+    const token = sign(ctx.state.user!.username, secret())
+    ctx.cookies.set('token', token)
     await next()
   }
 }
