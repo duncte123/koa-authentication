@@ -52,6 +52,7 @@
     "@babel/types": "^7.17.0",
     "@types/http-errors": "^1.8.2",
     "@types/jsonwebtoken": "^8.5.8",
+    "@types/koa": "^2.13.4",
     "@types/node": "^17.0.23",
     "bumpp": "^7.1.1",
     "eslint": "^8.12.0",
@@ -69,6 +70,7 @@
     "@vue/shared": "^3.2.31",
     "http-errors": "^2.0.0",
     "jsonwebtoken": "^8.5.1",
+    "koa": "^2.13.4",
     "simple-json-db": "^2.0.0"
   }
 }
