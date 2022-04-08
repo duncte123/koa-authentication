@@ -7,7 +7,6 @@ export function createLocalStrategy(
   verify: (username: string, password: string) => Promise<void> | void,
 ) {
   return async(ctx: Context, next: Next) => {
-    // @ts-expect-error body should support by koa-bodyparser
     const body = ctx.request.body
     if (!body || !body.username || !body.password)
       throw new BadRequest('Bad Basic Auth')
@@ -26,7 +25,10 @@ export function createLocalStrategy(
 export function createCookie(secret: () => string) {
   return async(ctx: Context, next: Next) => {
     const token = sign(ctx.state.user!.username, secret())
-    ctx.cookies.set('token', token)
+    ctx.cookies.set('token', token, {
+      expires: new Date(Date.now() + 100 * 86400 * 1000),
+      httpOnly: false,
+    })
     await next()
   }
 }
