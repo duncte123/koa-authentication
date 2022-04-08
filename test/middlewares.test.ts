@@ -2,7 +2,7 @@ import { type Context } from 'koa'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AuthenticationError } from '../src/errors'
 import { sign } from '../src/jwt'
-import { createCookie, createLocalStrategy } from '../src/middlewares'
+import { createAuthentication, createCookie, createLocalStrategy } from '../src/middlewares'
 
 describe('local strategy', () => {
   function createMock(username: string, password: string) {
@@ -72,5 +72,52 @@ describe('cookie', () => {
     await m(ctx, next)
     expect(next).toBeCalled()
     expect(set).toBeCalledWith('token', token)
+  })
+})
+
+describe('auth', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+  function createMock(token: string) {
+    const get = vi.fn(() => token)
+    const ctx = {
+      state: {
+        user: {
+          username: 'admin',
+        },
+      },
+      cookies: {
+        get,
+      },
+    } as any as Context
+    const next = vi.fn(async() => {})
+    return { ctx, next, get }
+  }
+
+  it('should work', async() => {
+    const date = new Date(2000, 1, 1, 13)
+    vi.setSystemTime(date)
+    const m = createAuthentication(() => 'secret')
+    const token = sign('admin', 'secret')
+    const { ctx, next, get } = createMock(token)
+    await m(ctx, next)
+    expect(next).toBeCalled()
+    expect(get).toBeCalledWith('token')
+    expect(ctx.state.user).toEqual({ username: 'admin' })
+  })
+
+  it('should throw error', async() => {
+    const date = new Date(2000, 1, 1, 13)
+    vi.setSystemTime(date)
+    const m = createAuthentication(() => 'secret')
+    const { ctx, next, get } = createMock('token')
+    await expect(() => m(ctx, next)).rejects.toEqual(
+      new AuthenticationError('Invalid Token'),
+    )
+    expect(get).toBeCalledWith('token')
   })
 })
