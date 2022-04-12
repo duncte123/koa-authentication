@@ -5,8 +5,8 @@ import {
   createLocalStrategy,
 } from './middlewares'
 
-export interface AuthOption{
-  verify(username: string, password: string): void
+export interface AuthOption {
+  verify(username: string, password: string): Promise<boolean> | boolean
   secret(): string
 }
 export function createAuth({ verify, secret }: AuthOption) {

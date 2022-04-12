@@ -4,19 +4,16 @@ import { AuthenticationError } from './errors'
 import { sign, verify } from './jwt'
 
 export function createLocalStrategy(
-  verify: (username: string, password: string) => Promise<void> | void,
+  verify: (username: string, password: string) => Promise<boolean> | boolean,
 ) {
   return async(ctx: Context, next: Next) => {
     const body = ctx.request.body
     if (!body || !body.username || !body.password)
       throw new BadRequest('Bad Basic Auth')
     const { username, password } = body
-    try {
-      await verify(username, password)
-    }
-    catch (err) {
+    const verified = await verify(username, password)
+    if (!verified)
       throw new AuthenticationError()
-    }
     ctx.state.user = { username }
     await next()
   }
@@ -38,15 +35,10 @@ export function createAuthentication(secret: () => string) {
     const token = ctx.cookies.get('token')
     if (!token)
       throw new AuthenticationError()
-    try {
-      const payload = verify(token, secret())
-      if (!payload?.username)
-        throw new AuthenticationError('Invalid Token')
-      ctx.state.user = { username: payload.username }
-    }
-    catch (err) {
+    const payload = verify(token, secret())
+    if (!payload?.username)
       throw new AuthenticationError('Invalid Token')
-    }
+    ctx.state.user = { username: payload.username }
     return next()
   }
 }

@@ -20,8 +20,7 @@ describe('local strategy', () => {
   }
 
   function verify(username: string, password: string) {
-    if (username !== 'admin' || password !== 'admin')
-      throw new Error('info mismatch')
+    return username === 'admin' && password === 'admin'
   }
 
   it('should work', async() => {
@@ -71,7 +70,10 @@ describe('cookie', () => {
     const { ctx, next } = createMock()
     await m(ctx, next)
     expect(next).toBeCalled()
-    expect(set).toBeCalledWith('token', token)
+    expect(set).toBeCalledWith('token', token, {
+      expires: new Date(Date.now() + 100 * 86400 * 1000),
+      httpOnly: false,
+    })
   })
 })
 

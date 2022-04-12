@@ -6,8 +6,7 @@ import { createAuth } from '../src'
 
 const { router, auth } = createAuth({
   verify: (username, password) => {
-    if (username !== 'admin' || password !== 'admin')
-      throw new Error('info mismatch')
+    return username === 'admin' && password === 'admin'
   },
   secret() {
     return 'secret'
