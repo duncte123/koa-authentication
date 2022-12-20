@@ -25,7 +25,7 @@ export function createCookie(secret: () => string, sameSite?: SameSite) {
     const token = sign(ctx.state.user!.username, secret())
     ctx.cookies.set('token', token, {
       expires: new Date(Date.now() + 100 * 86400 * 1000),
-      httpOnly: false,
+      httpOnly: true,
       sameSite,
       secure: sameSite === 'none',
     })
