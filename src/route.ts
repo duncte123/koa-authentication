@@ -1,5 +1,5 @@
 import Router from '@koa/router'
-import { Context, Next } from 'koa'
+import type { Context, Next } from 'koa'
 import {
   createAuthentication,
   createCookie,

@@ -27,6 +27,7 @@ export function createCookie(secret: () => string, sameSite?: SameSite) {
       expires: new Date(Date.now() + 100 * 86400 * 1000),
       httpOnly: false,
       sameSite,
+      secure: sameSite === 'none',
     })
     await next()
   }
