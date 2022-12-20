@@ -27,6 +27,7 @@ pnpm install @winwin/koa-authentication
 // 1. create
 import { createAuth } from '@winwin/koa-authentication'
 export const auth = createAuth({
+  sameSite: 'lax', // none, strict or lax (default)
   verify(username, password) {
     // return username === env.USERNAME && password === env.PASSWORD
     // if the authentication is valid return `true`, otherwise `false`

@@ -5,7 +5,10 @@ import {
   createLocalStrategy,
 } from './middlewares'
 
+export type SameSite = 'lax' | 'strict' | 'none'
+
 export interface AuthOption {
+  sameSite?: SameSite
   /**
    * Verify a basic auth
    * @param username username
@@ -19,7 +22,7 @@ export interface AuthOption {
   secret(): string
 }
 
-export function createAuth({ verify, secret }: AuthOption) {
+export function createAuth({ verify, secret, sameSite }: AuthOption) {
   /**
    * Router to provide `/login` and `/info` route
    */
@@ -31,7 +34,7 @@ export function createAuth({ verify, secret }: AuthOption) {
   /**
    * Middleware to set cookie from ctx.state.user
    */
-  const cookie = createCookie(secret)
+  const cookie = createCookie(secret, sameSite)
   /**
    * Middleware to auth
    */

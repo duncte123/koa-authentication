@@ -2,6 +2,7 @@ import { type Context, type Next } from 'koa'
 import { BadRequest } from 'http-errors'
 import { AuthenticationError } from './errors'
 import { sign, verify } from './jwt'
+import type { SameSite } from './route'
 
 export function createLocalStrategy(
   verify: (username: string, password: string) => Promise<boolean> | boolean,
@@ -19,12 +20,13 @@ export function createLocalStrategy(
   }
 }
 
-export function createCookie(secret: () => string) {
+export function createCookie(secret: () => string, sameSite?: SameSite) {
   return async(ctx: Context, next: Next) => {
     const token = sign(ctx.state.user!.username, secret())
     ctx.cookies.set('token', token, {
       expires: new Date(Date.now() + 100 * 86400 * 1000),
       httpOnly: false,
+      sameSite,
     })
     await next()
   }
